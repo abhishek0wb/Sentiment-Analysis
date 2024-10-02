@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Sentiment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-4">Twitter Sentiment Analysis</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <form id="analyzeForm" class="mb-4">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 font-bold mb-2">Twitter Username:</label>
+                    <input type="text" id="username" name="username" 
+                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                           placeholder="Enter Twitter username (without @)">
+                </div>
+                <button type="submit" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    Analyze Tweets
+                </button>
+            </form>
+            
+            <div id="results" class="hidden">
+                <h2 class="text-xl font-bold mb-2">Results</h2>
+                <div id="resultsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const resultsDiv = document.getElementById('results');
+            const resultsList = document.getElementById('resultsList');
+            
+            try {
+                const response = await fetch(`/api/analyze_tweets/${username}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultsDiv.classList.remove('hidden');
+                    resultsList.innerHTML = data.results.map(result => `
+                        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                            <p class="mb-2">${result.tweet}</p>
+                            <p class="text-sm">
+                                <span class="font-bold">Sentiment:</span> ${result.sentiment}
+                                <span class="ml-4 font-bold">Score:</span> ${result.score.toFixed(2)}
+                            </p>
+                        </div>
+                    `).join('');
+                } else {
+                    throw new Error(data.error || 'Failed to analyze tweets');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>

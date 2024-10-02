@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+uv_venv/
+
+# Configuration files
+config.py
+
+# Environment variables
+.env
